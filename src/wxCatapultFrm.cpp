@@ -229,7 +229,7 @@ void wxCatapultFrame::CheckConfigs()
 	wxArrayString extensions = m_sessionPage->GetDetectedExtensions();
 	CheckConfigsDlg dlg(this);
 	dlg.CenterOnParent();
-	if (dlg.ShowModal(cmd, machines, extensions) == wxID_OK) {
+	if (dlg.Present(cmd, machines, extensions) == wxID_OK) {
 		wxString machineString;
 		for (unsigned j = 0; j < machines.GetCount(); ++j) {
 			machineString += machines[j];
@@ -261,7 +261,7 @@ void wxCatapultFrame::OnMenuAbout(wxCommandEvent& event)
 	auto* message     = (wxStaticText*)FindWindowByName(wxT("AboutMessageLabel"));
 	version->SetLabel(wxString(Version::FULL_VERSION.c_str(), wxConvUTF8));
 	description->SetLabel(wxT("The official GUI for openMSX"));
-	message->SetLabel(wxT("\251 2003-2018 The openMSX Team\nhttp://openmsx.org/\n"));
+	message->SetLabel(wxT("\251 2003-2020 The openMSX Team\nhttp://openmsx.org/\n"));
 	dlg.Fit();
 	dlg.CenterOnParent();
 	dlg.ShowModal();

@@ -266,9 +266,9 @@ bool openMSXController::CheckVersion(const wxString& cmd)
 		? output[0] : wxString();
 
 	long ver = -1;
-	long majver;
-	long minver;
-	long subver;
+	long majver = 0;
+	long minver = 0;
+	long subver = 0;
 	if (version.StartsWith(wxT("openMSX "))) {
 		int pos = version.Find('.');
 		if (pos != wxNOT_FOUND) {
@@ -278,11 +278,11 @@ bool openMSXController::CheckVersion(const wxString& cmd)
 			if (pos != wxNOT_FOUND) {
 				version.Mid(0, pos).ToLong(&minver);
 				version.Mid(pos + 1).ToLong(&subver);
-				ver = (((majver * 100) + minver) * 100) + subver;
 			}
 		}
+		ver = (((majver * 100) + minver) * 100) + subver;
 	}
-	if (ver == -1) {
+	if (ver <= 0) {
 		wxMessageBox(
 			wxT("Unable to determine openMSX version!\nPlease upgrade to 0.10.0 or higher.\n(Or contact the authors.)"),
 			wxT("Error"));
@@ -355,9 +355,6 @@ void openMSXController::InitLaunchScript()
 	AddCommand(wxT("lindex [openmsx_info setting scale_factor] 2"),
 		[&](const wxString&, const wxString& r) {
 			FillRangeComboBox(wxT("ScalerFactorSelector"), r); });
-	AddCommand(wxT("lindex [openmsx_info setting accuracy] 2"),
-		[&](const wxString&, const wxString& r) {
-			FillComboBox(wxT("AccuracySelector"), r); });
 	AddCommand(wxT("lindex [openmsx_info setting videosource] 2"),
 		[&](const wxString&, const wxString& r) {
 			FillComboBox(wxT("VideoSourceSelector"), r); });
@@ -377,7 +374,7 @@ void openMSXController::InitLaunchScript()
 	AddCommand(wxT("set scale_factor"),
 		[&](const wxString& c, const wxString& r) {
 			UpdateSetting(c, r); });
-	AddCommand(wxT("set accuracy"),
+	AddCommand(wxT("set vsync"),
 		[&](const wxString& c, const wxString& r) {
 			UpdateSetting(c, r); });
 	AddCommand(wxT("set videosource"),
@@ -431,13 +428,16 @@ void openMSXController::InitLaunchScript()
 	AddCommand(wxT("set speed"),
 		[&](const wxString& c, const wxString& r) {
 			UpdateSetting(c, r); });
+	AddCommand(wxT("set fastforwardspeed"),
+		[&](const wxString& c, const wxString& r) {
+			UpdateSetting(c, r); });
+	AddCommand(wxT("set fastforward"),
+		[&](const wxString& c, const wxString& r) {
+			UpdateSetting(c, r); });
+	AddCommand(wxT("set fullspeedwhenloading"),
+		[&](const wxString& c, const wxString& r) {
+			UpdateSetting(c, r); });
 	AddCommand(wxT("set maxframeskip"),
-		[&](const wxString& c, const wxString& r) {
-			UpdateSetting(c, r); });
-	AddCommand(wxT("set minframeskip"),
-		[&](const wxString& c, const wxString& r) {
-			UpdateSetting(c, r); });
-	AddCommand(wxT("set throttle"),
 		[&](const wxString& c, const wxString& r) {
 			UpdateSetting(c, r); });
 	AddCommand(wxT("set cmdtiming"),
@@ -499,9 +499,9 @@ void openMSXController::InitLaunchScript()
 	AddSetting(wxT("scale_factor"),
 		[&](const wxString&, const wxString& v) {
 			UpdateCombo(v, wxT("ScalerFactorSelector")); });
-	AddSetting(wxT("accuracy"),
+	AddSetting(wxT("vsync"),
 		[&](const wxString&, const wxString& v) {
-			UpdateCombo(v, wxT("AccuracySelector")); });
+			UpdateToggle(v, wxT("VSyncButton"), S_CONVERT); });
 	AddSetting(wxT("videosource"),
 		[&](const wxString&, const wxString& v) {
 			UpdateCombo(v, wxT("VideoSourceSelector")); });
@@ -532,15 +532,18 @@ void openMSXController::InitLaunchScript()
 	AddSetting(wxT("speed"),
 		[&](const wxString&, const wxString& v) {
 			UpdateIndicator(v, wxT("SpeedIndicator")); });
-	AddSetting(wxT("minframeskip"),
+	AddSetting(wxT("fastforwardspeed"),
 		[&](const wxString&, const wxString& v) {
-			UpdateIndicator(v, wxT("MinFrameSkipIndicator")); });
+			UpdateIndicator(v, wxT("FastForwardSpeedIndicator")); });
 	AddSetting(wxT("maxframeskip"),
 		[&](const wxString&, const wxString& v) {
 			UpdateIndicator(v, wxT("MaxFrameSkipIndicator")); });
-	AddSetting(wxT("throttle"),
+	AddSetting(wxT("fastforward"),
 		[&](const wxString&, const wxString& v) {
-			UpdateToggle(v, wxT("MaxSpeedButton"), S_INVERT | S_EVENT); });
+			UpdateToggle(v, wxT("FastForwardButton"), S_EVENT); });
+	AddSetting(wxT("fullspeedwhenloading"),
+		[&](const wxString&, const wxString& v) {
+			UpdateToggle(v, wxT("FastLoadingButton"), S_EVENT); });
 	AddSetting(wxT("power"),
 		[&](const wxString&, const wxString& v) {
 			UpdateToggle(v, wxT("PowerButton")); });

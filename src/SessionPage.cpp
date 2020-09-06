@@ -334,14 +334,14 @@ void SessionPage::OnBrowseCartB(wxCommandEvent& event)
 void SessionPage::BrowseDisk(MediaInfo& m)
 {
 	BrowseMedia(m,
-		wxT("All known disk files|*.dsk;*.DSK;*.xsa;*.XSA;*.dmk;*.DMK;*.zip;*.ZIP;*.gz;*.GZ;*.di1;*.DI1;*.di2;*.DI2|Uncompressed disk files|*.dsk;*.DSK;*.xsa;*.XSA;*.di1;*.DI1;*.di2;*.DI2|Compressed files (*.zip;*.gz)|*.gz;*.GZ;*.zip;*.ZIP|All files|*.*||"),
+		wxT("All known disk files|*.dsk;*.DSK;*.xsa;*.XSA;*.dmk;*.DMK;*.zip;*.ZIP;*.gz;*.GZ;*.di1;*.DI1;*.di2;*.DI2;*.fd1;*.FD1;*.fd2;*.FD2|Uncompressed disk files|*.dsk;*.DSK;*.xsa;*.XSA;*.di1;*.DI1;*.di2;*.DI2;*.fd1;*.FD1;*.fd2;*.FD2|Compressed files (*.zip;*.gz)|*.gz;*.GZ;*.zip;*.ZIP|All files|*.*||"),
 		wxT("Select disk image"));
 }
 
 void SessionPage::BrowseCart(MediaInfo& m)
 {
 	BrowseMedia(m,
-		wxT("All known cartridge files|*.rom;*.ROM;*.ri;*.RI;*.zip;*.ZIP;*.gz;*.GZ|Uncompressed cartridge files|*.rom;*.ROM;*.ri;*.RI|Compressed files (*.zip;*.gz)|*.gz;*.GZ;*.zip;*.ZIP|All files|*.*||"),
+		wxT("All known cartridge files|*.rom;*.ROM;*.ri;*.RI;*.mx1;*.MX1;*.mx2;*.MX2;*.zip;*.ZIP;*.gz;*.GZ|Uncompressed cartridge files|*.rom;*.ROM;*.ri;*.RI;*.mx1;*.MX1;*.mx2;*.MX2|Compressed files (*.zip;*.gz)|*.gz;*.GZ;*.zip;*.ZIP|All files|*.*||"),
 		wxT("Select ROM image"));
 }
 
@@ -694,13 +694,7 @@ void SessionPage::RestoreHistory()
 				type,
 				split(ips, wxT(";;")))); // 2nd-level
 		}
-		if ((insertedMedia & m->mediaBits) &&
-#if wxVERSION_NUMBER < 2903
-				!m->control.IsEmpty()
-#else
-				!m->control.IsTextEmpty()
-#endif
-				) {
+		if ((insertedMedia & m->mediaBits) && !m->control.IsListEmpty()) {
 			m->control.SetSelection(0);
 			auto* h = static_cast<HistoryData*>(m->control.GetClientObject(0));
 			if (m->mediaType == CARTRIDGE) SetMapperType(*m, h->type);
@@ -860,7 +854,7 @@ void SessionPage::OnSelectMapper(wxCommandEvent& event)
 {
 	if (auto* target = GetLastMenuTarget()) {
 		m_romTypeDialog->CenterOnParent();
-		if (m_romTypeDialog->ShowModal(target->type) == wxID_OK) {
+		if (m_romTypeDialog->Present(target->type) == wxID_OK) {
 			SetMapperType(*target, m_romTypeDialog->GetSelectedType());
 			insertMedia(*target);
 		}
@@ -871,7 +865,7 @@ void SessionPage::OnBrowseIps(wxCommandEvent& event)
 {
 	if (auto* target = GetLastMenuTarget()) {
 		m_ipsDialog->CenterOnParent();
-		if (m_ipsDialog->ShowModal(target->ips, target->ipsdir) == wxID_OK) {
+		if (m_ipsDialog->Present(target->ips, target->ipsdir) == wxID_OK) {
 			SetIpsList(*target, m_ipsDialog->GetIPSList());
 			target->ipsdir = m_ipsDialog->GetLastBrowseLocation();
 			insertMedia(*target);

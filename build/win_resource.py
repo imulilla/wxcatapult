@@ -1,25 +1,20 @@
 # Generates Windows resource header.
 
 from outpututils import rewriteIfChanged
-from version import extractRevisionNumber, packageVersion, extractRevision
+from version import (
+	extractRevisionNumber, getDetailedVersion, packageVersion
+)
 
 import sys
 
 def iterResourceHeader():
-	if '-' in packageVersion:
-		versionNumber = packageVersion[ : packageVersion.index('-')]
-	else:
-		versionNumber = packageVersion
-	versionComponents = versionNumber.split('.') + [ str(extractRevisionNumber()) ]
+	versionComponents = packageVersion.split('-')[0].split('.')
+	versionComponents += ['0'] * (3 - len(versionComponents))
+	versionComponents.append(str(extractRevisionNumber()))
 	assert len(versionComponents) == 4, versionComponents
 
-	versionStr = packageVersion
-	extractedRevision = extractRevision()
-	if extractedRevision is not None:
-		versionStr += "-" + extractedRevision
-
 	yield '#define CATAPULT_VERSION_INT %s' % ', '.join(versionComponents)
-	yield '#define CATAPULT_VERSION_STR "%s\\0"' % versionStr
+	yield '#define CATAPULT_VERSION_STR "%s\\0"' % getDetailedVersion()
 
 if __name__ == '__main__':
 	if len(sys.argv) == 2:

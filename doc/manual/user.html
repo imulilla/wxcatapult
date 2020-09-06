@@ -237,7 +237,7 @@ This page contains three types of controls:
 </p>
 
 <ul>
-<li>controls to set the speed and frame skip of openMSX.</li>
+<li>controls to set the speed and maximum frame skip of openMSX.</li>
 <li>controls to push special buttons on the MSX within openMSX like power and
 reset.</li>
 <li>controls to plug devices into the ports of the MSX.</li>
@@ -538,26 +538,28 @@ still set up what's in the joystick ports.)
 </p>
 
 <p class="image">
-<img src="misc.png" width="543" height="328" alt="Miscellaneous Controls Page">
+<img src="misc.png" width="736" height="387" alt="Miscellaneous Controls Page">
 </p>
 
 <p>
 The top section of this page consists of a number of controls with which you
-can influence the speed and frame skip setting of openMSX. The upper row
+can influence the speed and maximum frame skip setting of openMSX. The upper row
 controls the <a class="external"
 href="http://openmsx.org/manual/commands.html#speed">speed
 percentage</a> of openMSX. You can use the slider to select a speed between 1
 and 500%. You can also directly input the speed into the input box. Finally,
-the buttons on the right are to set the speed to respectively 100% and the
-maximum. If the Max Speed Button is used, all limits are removed. Very useful
-to fast forward demos or loading screens. If the selected speed is higher than
-your PC can manage, openMSX will try to go as fast as possible. The next rows
-selects how many frames may be <a class="external"
+the buttons on the right are to set the speed to respectively 100% and to the
+fast forward speed. If the "Fast Fwd" button is pressed, openMSX runs at the
+fast forward speed, which can be tweaked with the Fast forward speed slider up
+to 10000% (100 times the normal speed). Very useful to fast forward demos. For
+the case of loading from tape, disk or LaserDisc taking forever, you can tell
+openMSX to <a class="external"
+href="http://openmsx.org/manual/commands.html#fullspeedwhenloading">go as fast as possible automatically during loading</a> using the "Fast
+Load" button. If the selected speed is higher than your PC can manage, openMSX
+will try to go as fast as possible. The next rows selects how many frames may
+be <a class="external"
 href="http://openmsx.org/manual/commands.html#maxframeskip">maximally
-skipped</a> to maintain the chosen speed and how many frames are <a
-class="external"
-href="http://openmsx.org/manual/commands.html#minframeskip">minimally
-skipped</a>.
+skipped</a> to maintain the chosen speed.
 </p>
 
 <p>
@@ -612,7 +614,7 @@ If openMSX is not running, most controls will be disabled.
 </p>
 
 <p class="image">
-<img src="video.png" width="734" height="360" alt="Video Control Page">
+<img src="video.png" width="738" height="388" alt="Video Control Page">
 </p>
 
 <p>
@@ -623,20 +625,21 @@ In the top-left corner, you can select which renderer is used by openMSX.
 With the top-centre controls you can select which scaler should be used. You
 can select both the scaling factor and the scaling algorithm. Scalers determine
 how the picture is scaled to higher resolutions than 320&times;240 (if you use
-a factor greater than 1). Beware that some scalers can be really slow. The
+a factor greater than 1). Beware that some scalers might be slow. The
 algorithms are sometimes quite complex.
 </p>
 
 <p>
-The Accuracy control lets you select the accuracy level openMSX uses to draw
-the screen.
+See for an explanation of renderers and scalers the <a class="external"
+href="http://openmsx.org/manual/user.html#renderers">openMSX
+User's Manual</a>.
 </p>
 
 <p>
-See for an explanation of renderers, scalers and accuracy the
-<a class="external"
-href="http://openmsx.org/manual/user.html#renderers">openMSX
-User's Manual</a>.
+The VSync button toggles frame drawing synchronization with your monitor. It
+only has effect when using the SDLGL-PP renderer. More info in the <a
+class="external" href="http://openmsx.org/manual/commands.html#vsync">openMSX
+Command Reference</a>.
 </p>
 
 <p>
@@ -883,7 +886,7 @@ close Catapult.
 </dd>
 <dt>
 Save openMSX Settings
-</dt>	
+</dt>
 <dd>
 This option is only available when openMSX is running. You can ask openMSX to
 save its settings to the default location (which is
@@ -901,8 +904,7 @@ Save openMSX Settings On Exit
 </dt>
 <dd>
 When is option is on (indicated by a check mark in front of it), openMSX will
-save its settings as soon as it closes. Keep in mind that Full Speed and Mute
-settings e.g., will also be saved!
+save its settings as soon as it closes.
 </dd>
 <dt>
 Display Broken Configurations

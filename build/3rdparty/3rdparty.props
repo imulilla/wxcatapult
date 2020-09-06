@@ -68,9 +68,5 @@
       <Value>$(LibNameLibXml)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
-    <BuildMacro Include="LibNameWx">
-      <Value>$(LibNameWx)</Value>
-      <EnvironmentVariable>true</EnvironmentVariable>
-    </BuildMacro>
   </ItemGroup>
 </Project>
