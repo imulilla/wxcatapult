@@ -42,7 +42,7 @@ private:
 	void OnDisableSprites(wxCommandEvent& event);
 	void OnFullScreen(wxCommandEvent& event);
 	void OnDeInterlace(wxCommandEvent& event);
-	void OnChangeAccuracy(wxCommandEvent& event);
+	void OnVSync(wxCommandEvent& event);
 	void OnChangeVideoSource(wxCommandEvent& event);
 	void OnChangeScalerAlgo(wxCommandEvent& event);
 	void OnChangeScalerFactor(wxCommandEvent& event);
@@ -55,7 +55,6 @@ private:
 	openMSXController& m_controller;
 
 	wxComboBox* m_videoSourceList;
-	wxComboBox* m_accuracyList;
 	wxComboBox* m_rendererList;
 	wxComboBox* m_scalerAlgoList;
 	wxComboBox* m_scalerFactorList;
@@ -70,7 +69,7 @@ private:
 	wxStaticText* m_rendererLabel;
 	wxStaticText* m_scalerLabel;
 	wxStaticText* m_videoSourceLabel;
-	wxStaticText* m_accuracyLabel;
+	wxStaticText* m_vSyncLabel;
 	wxStaticText* m_deinterlaceLabel;
 	wxStaticText* m_limitSpritesLabel;
 	wxStaticText* m_disableSpritesLabel;
@@ -82,6 +81,7 @@ private:
 	wxStaticText* m_noiseLabel;
 	wxStaticText* m_timesLabel;
 
+	wxToggleButton* m_vSyncButton;
 	wxToggleButton* m_limitSpritesButton;
 	wxToggleButton* m_disableSpritesButton;
 	wxToggleButton* m_deinterlaceButton;

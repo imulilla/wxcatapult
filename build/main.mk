@@ -101,15 +101,8 @@ PACKAGE_FULL:=$(PACKAGE_NAME)-$(PACKAGE_VERSION)
 # experience with cross-compilation, a more sophisticated system can be
 # designed.
 
-ifeq ($(origin CATAPULT_TARGET_CPU),environment)
 ifeq ($(origin CATAPULT_TARGET_OS),environment)
 # Do not perform autodetection if platform was specified by the user.
-else # CATAPULT_TARGET_OS not from environment
-$(error You have specified CATAPULT_TARGET_CPU but not CATAPULT_TARGET_OS)
-endif # CATAPULT_TARGET_OS
-else # CATAPULT_TARGET_CPU not from environment
-ifeq ($(origin CATAPULT_TARGET_OS),environment)
-$(error You have specified CATAPULT_TARGET_OS but not CATAPULT_TARGET_CPU)
 else # CATAPULT_TARGET_OS not from environment
 
 DETECTSYS_PATH:=$(BUILD_BASE)/detectsys
@@ -124,18 +117,10 @@ $(DETECTSYS_MAKE): $(DETECTSYS_SCRIPT)
 	$(CMD)$(PYTHON) $< > $@
 
 endif # CATAPULT_TARGET_OS
-endif # CATAPULT_TARGET_CPU
-
-PLATFORM:=
-ifneq ($(origin CATAPULT_TARGET_OS),undefined)
-ifneq ($(origin CATAPULT_TARGET_CPU),undefined)
-PLATFORM:=$(CATAPULT_TARGET_CPU)-$(CATAPULT_TARGET_OS)
-endif
-endif
 
 # Ignore rest of Makefile if autodetection was not performed yet.
 # Note that the include above will force a reload of the Makefile.
-ifneq ($(PLATFORM),)
+ifneq ($(origin CATAPULT_TARGET_OS),undefined)
 
 # Load OS specific settings.
 $(call DEFCHECK,CATAPULT_TARGET_OS)
@@ -161,7 +146,7 @@ CUSTOM_MAKE:=$(MAKE_PATH)/custom.mk
 PROBE_SCRIPT:=$(MAKE_PATH)/probe.mk
 COMPONENTS_MAKE:=$(MAKE_PATH)/components.mk
 
-BUILD_PATH:=$(BUILD_BASE)/$(PLATFORM)-$(CATAPULT_FLAVOUR)
+BUILD_PATH:=$(BUILD_BASE)/$(CATAPULT_TARGET_OS)-$(CATAPULT_FLAVOUR)
 
 OBJECTS_PATH:=$(BUILD_PATH)/obj
 
@@ -191,6 +176,11 @@ ifeq ($(PROBE_MAKE_INCLUDED),true)
 include $(COMPONENTS_MAKE)
 $(call BOOLCHECK,COMPONENT_CORE)
 endif
+endif
+
+ifeq ($(PROBE_MAKE_INCLUDED),true)
+# If probe was succesful, it's safe to use wx-config.
+CXX:=$(shell wx-config --cxx)
 endif
 
 
@@ -260,8 +250,23 @@ DEPEND_FLAGS+=-MP
 # Compiler flags
 # ==============
 
-CXXFLAGS+=-pipe -Wall -Wextra -Wno-unused-parameter --no-strict-aliasing
-CXXFLAGS+=-Wno-literal-suffix -Wno-unused-local-typedefs
+CXXFLAGS+=-pipe -Wall -Wextra -Wno-unused-parameter -fno-strict-aliasing
+# Suppress warnings triggered by wx headers:
+CXXFLAGS+=$(shell \
+  echo | $(CXX) -E -Wno-deprecated-copy - >/dev/null 2>&1 \
+  && echo -Wno-deprecated-copy \
+  )
+ifneq ($(filter %clang++,$(CXX))$(filter clang++%,$(CXX)),)
+# Clang-specific flags go here.
+else
+ifneq ($(filter %g++,$(CXX))$(filter g++%,$(CXX))$(findstring /g++-,$(CXX)),)
+# GCC-specific flags go here.
+CXXFLAGS+=$(shell \
+  echo | $(CXX) -E -Wno-cast-function-type - >/dev/null 2>&1 \
+  && echo -Wno-cast-function-type \
+  )
+endif # GCC
+endif # not-Clang
 CXXFLAGS+=-I$(CONFIG_PATH)
 CXXFLAGS+=$(XRC_CFLAGS) $(XML_CFLAGS)
 LDADD+=$(XRC_LDFLAGS) $(XML_LDFLAGS)
@@ -283,11 +288,6 @@ ifeq ($(COMPONENT_CORE),false)
 DUMMY:=$(shell rm -f $(PROBE_MAKE))
 $(error Cannot build Catapult because essential libraries are unavailable. \
 Please install the needed libraries and rerun (g)make)
-endif
-
-ifeq ($(PROBE_MAKE_INCLUDED),true)
-# If probe was succesful, it's safe to use wx-config.
-CXX:=$(shell wx-config --cxx)
 endif
 
 # Force a probe if "probe" target is passed explicitly.
@@ -313,8 +313,8 @@ all: $(CONFIG_HEADER) $(VERSION_HEADER) config $(BINARY_FULL) $(XRC_FULL) $(BITM
 
 config:
 	@echo "Build configuration"
-	@echo "  Platform: $(PLATFORM)"
-	@echo "  Flavour:  $(CATAPULT_FLAVOUR)"
+	@echo "  Target OS: $(CATAPULT_TARGET_OS)"
+	@echo "  Flavour:   $(CATAPULT_FLAVOUR)"
 
 $(BINARY_FULL): $(OBJECTS_FULL) $(RESOURCE_OBJ)
 	$(SUM) "Linking $(BINARY_FILE)..."
@@ -490,4 +490,4 @@ endif
 # in normal operation this rule is never triggered.
 $(DEPEND_FULL):
 
-endif # PLATFORM
+endif # CATAPULT_TARGET_OS
